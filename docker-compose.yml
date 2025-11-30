@@ -1,0 +1,49 @@
+version: '3.8'
+services:
+# 1. The Spark Master (Temporary Debugging Mode)
+  # 1. The Spark Master (FINAL FIX)
+  spark-master:
+    image: apache/spark:latest
+    container_name: spark-master
+    environment:
+      SPARK_MODE: master
+      SPARK_MASTER_HOST: spark-master
+    ports:
+      - "9090:8080"
+      - "7077:7077"
+    networks:
+      - spark-network
+    # NEW: Using ABSOLUTE PATH for the command
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+
+  # 2. The Spark Worker (FINAL FIX)
+  spark-worker:
+    image: apache/spark:latest
+    container_name: spark-worker
+    environment:
+      SPARK_MODE: worker
+      SPARK_MASTER_URL: spark://spark-master:7077
+    depends_on:
+      - spark-master
+    networks:
+      - spark-network
+    # NEW: Using ABSOLUTE PATH for the command
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    volumes:
+      - /Users/pratikshabiradar/Downloads/pyspark_project_full/dataset:/home/jovyan/dataset
+  # This is your VS Code environment
+  spark-client:
+    image: jupyter/pyspark-notebook:latest
+    container_name: spark-client
+    volumes:
+      - /Users/pratikshabiradar/Downloads/pyspark_project_full:/home/jovyan/work # Scripts
+      - /Users/pratikshabiradar/Downloads/pyspark_project_full/dataset:/data # Syncs your current folder to the container
+      - /Users/pratikshabiradar/Downloads/pyspark_project_full/jars:/home/jovyan/work/jars
+    command: tail -f /dev/null # Keeps the container running so you can attach to it
+    networks:
+      - spark-network
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+
+networks:
+  spark-network:

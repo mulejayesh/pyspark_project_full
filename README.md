@@ -12,6 +12,39 @@ Install dependencies:
 ```bash
 pip install -r requirements.txt
 
+
+To Run Task1 
+
+Run Command : python3 task1.py
+
+output:
+jobs -> 500 rows
+candidates -> 2001 rows
+education -> 2000 rows
+applications -> 5000 rows
+workflow_events -> 16769 rows
+How many jobs are currently open?
+(178,)
+Top 5 departments by number of applications
+('Marketing', 923)
+('Product', 810)
+('Engineering', 789)
+('Sales', 761)
+('Finance', 629)
+Candidates who applied to more than 3 jobs
+('0002572a-1130-48f5-9d5d-8f6533611134', 'Brian', 'Hines', 4)
+('017cc74e-6f18-4343-bf41-5c985a8e8f05', 'Sara', 'Lee', 4)
+('01e7cde7-33a2-4a5f-8683-4cc5757e2b43', 'Mary', 'Lambert', 4)
+('01f268f5-6553-45aa-bdbc-34f8c8ddd9bb', 'Cindy', 'Mcintosh', 5)
+('0240f59a-a638-4854-bb2b-8b80c08bd674', 'Gregory', 'Armstrong', 7)
+('02b622e9-808e-48d2-9d26-4b1b6593b659', 'Joseph', 'Guerra', 4)
+('02f4298f-6ffa-4356-8690-5ba517e03df5', 'James', 'Mcbride', 4)
+('0316cde5-9590-4901-a5fb-24214d8e8fdb', 'Steven', 'Jr.', 4)
+('0331bd0d-13ba-4d24-bebb-527c1438e799', 'Anne', 'Ramirez', 4)
+there are more records also.
+
+Task 2:
+
 Install Docker with Spark Image
 
 
@@ -37,7 +70,36 @@ Star schema:
 
 Analytics Layer : Spark SQL queries
 
-Storage Format Choice :
+Execute below commands for Task2 :
+
+docker exec -it spark-client spark-submit \
+    --jars /home/jovyan/work/jars/delta-spark_2.12-3.1.0.jar,/home/jovyan/work/jars/delta-storage-3.1.0.jar \
+    --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" \
+    --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog" \
+    /home/jovyan/work/src/ingest.py
+
+
+
+docker exec -it spark-client spark-submit \
+    --jars /home/jovyan/work/jars/delta-spark_2.12-3.1.0.jar,/home/jovyan/work/jars/delta-storage-3.1.0.jar \
+    --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" \
+    --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog" \
+    --conf "spark.sql.legacy.timeParserPolicy=LEGACY" \
+    /home/jovyan/work/src/transform.py
+
+
+
+docker exec -it spark-client spark-submit \
+    --jars /home/jovyan/work/jars/delta-spark_2.12-3.1.0.jar,/home/jovyan/work/jars/delta-storage-3.1.0.jar \
+    --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" \
+    --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog" \
+    --conf "spark.sql.legacy.timeParserPolicy=LEGACY" \
+    /home/jovyan/work/src/data_quality.py
+
+
+Task 3:
+
+torage Format Choice :
 
     I chose Delta Lake because:
 
@@ -55,11 +117,17 @@ Scaling to 10TB
 
     Spark Structured Streaming/ Databricks cloud
 
-    Auto Loader
+    Auto Loader or we can use more scalable approach with AWS EMR or other cloud providers.
 
-    Delta Lake partitions
+    Delta Lake partitions with hire date or event date.
 
     OPTIMIZE + ZORDER for performance
+    
+    Reduce operations which do too much of Shuffles in partitions in spark.
+
+    Use broadcast joins if some tables are smaller.
+
+    Avoid data skew in case one partition has too much data we can repartition with salting mechanism.
 
 
 AI (ChatGPT) used for:

@@ -129,6 +129,10 @@ Scaling to 10TB
 
     Avoid data skew in case one partition has too much data we can repartition with salting mechanism.
 
+    For 10TB of workflow_events, I’d keep the same Bronze–Silver–Gold Delta Lake design but move it to cloud storage (e.g. S3) and run the pipeline on an autoscaling Spark cluster (Databricks/EMR). I’d ingest events incrementally using Spark Structured Streaming or Auto Loader into a Delta Bronze table partitioned by event_date, then normalize and deduplicate into Silver.
+
+    For Time-to-Hire, I’d pre-aggregate hired events in the 10TB table to a much smaller “per application” table, then join that with applications (possibly broadcasted) to compute time-to-hire per job and department. Data is partitioned by date, optimized into 256–512MB files, and Z-ordered on query keys like application_id. A medium-sized cluster (for example 8–16 workers with 16 vCPUs and 64–128GB RAM each) with adaptive query execution and autoscaling would comfortably handle daily recomputation of these metrics while keeping costs manageable.
+
 
 AI (ChatGPT) used for:
 

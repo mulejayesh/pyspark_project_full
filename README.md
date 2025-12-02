@@ -11,11 +11,11 @@ Install dependencies:
 
 ```bash
 pip install -r requirements.txt
-
+```
 
 To Run Task1 
 
-Run Command : python3 task1.py
+Run Command : ```bashpython3 task1.py```
 
 output:
 jobs -> 500 rows
@@ -71,7 +71,7 @@ Star schema:
 Analytics Layer : Spark SQL queries
 
 Execute below commands for Task2 :
-
+```bash
 docker exec -it spark-client spark-submit \
     --jars /home/jovyan/work/jars/delta-spark_2.12-3.1.0.jar,/home/jovyan/work/jars/delta-storage-3.1.0.jar \
     --conf "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension" \
@@ -95,7 +95,7 @@ docker exec -it spark-client spark-submit \
     --conf "spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog" \
     --conf "spark.sql.legacy.timeParserPolicy=LEGACY" \
     /home/jovyan/work/src/data_quality.py
-
+```
 
 Task 3:
 
